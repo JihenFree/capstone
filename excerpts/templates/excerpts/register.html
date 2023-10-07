@@ -1,0 +1,33 @@
+{% extends "excerpts/layout.html" %}
+
+{% block body %}
+
+    <h2>Register</h2>
+
+    
+
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input class="{{ class_name }}" autofocus type="text" name="username" placeholder="Username" value="{{ username }}" style="width: 250px" required>
+        
+        <div class="invalid-feedback">{{ message_name }}</div>
+    </div>
+        <div class="form-group">
+            <input class="form-control" type="email" name="email" placeholder="Email Address" value="{{ email }}" style="width: 250px">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="password" placeholder="Password" value="{{ password }}" style="width: 250px" required>
+        </div>
+                
+            <div class="form-group" >
+            <input class="{{ class_conf }}" type="password" name="confirmation" placeholder="Confirm Password" value="{{ confirmation }}" style="width: 250px">
+        
+        <div class="invalid-feedback">{{ message_pw }}</div>
+    </div>
+        <input class="btn btn-primary" type="submit" value="Register">
+    </form>
+<div style="margin-top: 20px;">
+    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+</div>
+{% endblock %}

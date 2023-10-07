@@ -1,0 +1,17 @@
+
+body {
+    background-image: url('paper.jpg'); 
+    background-repeat: round;
+    margin-left: 40px;
+    margin-right: 40px; 
+    
+}
+
+.bottom-links{
+  position: absolute;
+    bottom: 20px;
+}
+
+table tr td {
+  background-color: transparent;
+}

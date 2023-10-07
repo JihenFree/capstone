@@ -1,0 +1,670 @@
+{% extends "excerpts/layout.html" %}
+{% load static %}
+{% block body %}
+{% if user.is_authenticated %}
+{% if user.is_superuser and unsent > 0 %}
+
+<div class="alert alert-dismissible alert-secondary" >
+  
+  
+  
+  <h4 class="alert-heading">Unsent Rewards!</h4>
+  <p class="mb-0">There are some rewards that haven't been sent yet ! <a href="#" onclick="unsentRewards()" class="alert-link">click here</a> to check them and update their status. </p>
+
+</div>
+
+
+<div class="modal" id="unsent" >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+       
+        <button type="button" name="unsent" class="close" onclick="closeForm(this)" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h2 class="modal-title">Unsent Rewards</h2>
+      <form>
+        {% csrf_token %}
+    
+        
+        <select class="form-control" id="rewards"   style="margin: 10px 4px;" required>
+          <option value="" disabled selected hidden>Pick a Reward</option>
+        </select>
+       
+       
+        <button type="button" onclick="detailReward()" class="btn btn-outline-primary" style="float: right;padding: 10px;">See details</button>
+        
+        </form>
+        <form action="{% url 'sending' %}" method="post">
+          {% csrf_token %}
+        <div style="margin: 30px 30px;">
+          <p>
+          <p> <span class="lead">Winner :&nbsp&nbsp</span><b><span id="winner"></span></b></p>
+          <p><span class="lead">Book Title : </span> <b><span id="rewardtitle"></span></b></p>
+          <p><span class="lead">Book Author : </span><b><span id="rewardauthor"></span></b></p>
+          <p><span class="lead">Reward N° : </span</span><b><span id="rewardnbr"></span></b><b><input type="text" name="pickedreward"  id="rewardnb" hidden></b></p>
+           <p><span class="lead">Reward Date : </span><b><span id="rewarddate"></span></b></p>
+          <p><span class="lead">Winner Address : </span><b><span id="winneraddress" style="white-space: pre-wrap;"></span></b></p>
+        </p>
+        <p><span class="lead">Tracking N° & Shipper :</span> <span>
+            <input class="form-control" type="text" name="shiptrack" id="tracking" placeholder="Tracking number and Shipper" style="margin: 10px 4px;" required> </span></p>
+            <div class="form-check" style="margin: 10px 20px;"> 
+              <input class="form-check-input" type="checkbox"  id="sentcheck" onclick="sendReward()">
+              
+                Sent
+                <input type="text" name="sent"  id="sentyes" hidden>
+            </div>
+            <button type="submit" name="unsent" onclick="closeForm(this)"   class="btn btn-primary" style="float: right;padding: 10px;">Save</button>
+          </form>   
+        </div>
+      </div>
+      </div>
+    
+    </div>
+  </div>
+
+
+
+{% endif %}
+<div class="modal" id="nomore">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+       
+        <button type="button" class="close" name="nomore" onclick="closeForm(this)" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    You have reached your daily allowed number of new excerpts.
+      </div>
+    </div>
+    </div>
+  </div>
+
+<div class="modal" id="newexcerptform" >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+       
+        <button type="button" name="newexcerptform" class="close" onclick="closeForm(this)" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h5 class="modal-title">New Excerpt</h5>
+      <form action="{% url 'newexcerpt' %}" method="post">
+        {% csrf_token %}
+      
+        <textarea  class="form-control" name="excerpt" rows="10" cols="100" maxlength="200" minlength="20" placeholder="Type the excerpt text here" style="margin: 10px 4px;" required></textarea>
+        <input class="form-control" type="text" name="author" placeholder="Author" style="margin: 10px 4px;" required> 
+        <input class="form-control" type="text" name="book" placeholder="Book Title" style="margin: 10px 4px;" required>
+        
+        <select class="form-control" id="exampleSelect1" name="genre" placeholder="Genre" style="margin: 10px 4px;">
+          <option value="" disabled selected hidden>Genre</option>
+          <option value="Fiction">Fiction</option>
+          <option value="Philosophy">Philosophy</option>
+          <option value="Poetry">Poetry</option>
+          
+        </select>
+        <button type="submit" class="btn btn-primary" style="float: right;padding: 10px;">Save</button>
+      </div>
+      </div>
+    </form>
+    </div>
+  </div>
+  
+  {% for reward in rewards %}
+  {% if user.pk == reward.user_reward.pk %}
+  <div class="alert alert-dismissible alert-warning" id="congrats">
+  
+    <h4 class="alert-heading">Congratulations!</h4>
+    <p class="mb-0">You're the lucky winner N° {{ reward.id }} of Excerpts Brought To Light give away ! <a href="#" onclick="confirmReward()" class="alert-link">click here</a> to choose your reward and to update your courier address. Note that the suggested books are based on your likes. So if you want to change them or if there is no suggested books, like some more excerpts first ;) </p>
+  </div>
+  
+  <div class="modal" id="reward" >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+         
+          <button type="button" name="reward" class="close" onclick="closeForm(this)" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h2 class="modal-title">Your Reward</h2>
+        <form>
+          {% csrf_token %}
+       <p> Choose your reward among the following books :</p>
+          
+          <select class="form-control" id="choosereward" name="choosebook" placeholder="choose a book" style="margin: 10px 4px;" required>
+            <option value="" disabled selected hidden>Choose a book</option>
+          </select>
+         <p>   Your reward will be sent to :</p>
+          <textarea  class="form-control" id="thisaddress" name="address" rows="10" cols="100" placeholder="Type your address here" style="margin: 10px 4px;" required>{{ user.address }}</textarea>
+        
+         
+          <button type="button" onclick="saveReward('{{ reward.id }}')" class="btn btn-primary" style="float: right;padding: 10px;">Submit</button>
+        </div>
+        </div>
+      </form>
+      </div>
+    </div>
+    <div class="modal" id="rewardinfosent">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <button type="button" class="close" name="rewardinfosent" onclick="closeForm(this)" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+           
+           Thanks for completing the requested information. You will receive your reward soon!
+          </div>
+        </div>
+        </div>
+      </div>
+
+    <div class="modal" id="checkreward">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+           
+            <button type="button" class="close" name="checkreward" onclick="closeForm(this)" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        Do you confirm?
+        <button type="button" class="btn btn-primary">Confirm</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+        </div>
+      </div>
+  {% endif %}
+  {% endfor %}
+ 
+  {% endif %}
+   
+
+
+
+  <div ><h4>{{ user.username }}</h4></div> 
+  
+  <div style="padding-top : 50px; float: right;">
+    <table>
+      <tr>
+        <form class="form-inline my-2 my-lg-0" id="find" action="{% url 'find' %}" method="post">
+          {% csrf_token %}
+        <td style="background-color: transparent;">
+   
+      
+         <input class="form-control" style="background-color: transparent;" size="30"  type="text" name="search" id="search" placeholder="Search by author, title or phrase" list="found" >
+         <datalist id="found">
+          
+          </datalist>
+         
+        </td>
+        <td style="background-color: transparent;">
+          
+         
+          &nbsp;&nbsp;<button class="btn btn-secondary"  type="submit"><strong>Find</strong></button>
+         
+        
+      </td>
+    </form>
+      </tr>
+    </table>
+          </div>
+   
+         
+            
+<div style="padding-top: 60px;">
+      
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" data-bs-toggle="tab" href="#" id="navAll" onclick="navtab(this)"  style="background-color: transparent;">All</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" href="#" onclick="navtab(this)" id="navFiction"  style="background-color: transparent;">Fiction</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" href="#" onclick="navtab(this)" id="navPhilo"  style="background-color: transparent;">Philosophy</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" href="#" onclick="navtab(this)" id="navPoetry"  style="background-color: transparent;">Poetry</a>
+    </li>
+    {% if user.is_authenticated %}
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" href="#" onclick="navtab(this)"  style="background-color: transparent;">My excerpts</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" href="#" onclick="navtab(this)"  style="background-color: transparent;">My likes</a>
+    </li>
+    {% endif %}
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle show" onclick="dropdown()" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="true" >Sort by</a>
+      <div style="display: none" id="drop"  class="dropdown-menu show" style="position: absolute; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, 46px);" data-popper-placement="bottom-start">
+        <a class="dropdown-item" href="{% url 'bylikes' %}">Popularity</a>
+        <a class="dropdown-item" href="{% url 'index' %}">Most recent</a>
+        
+    </li>
+  </ul>
+</div>
+  <div id="myTabContent" class="tab-content" style="margin: 20px;" >
+
+
+    <div class="tab-pane fade show active"  id="All" data-genre="{{ genre }}">
+      <div style="height: 1650px;
+      flex-direction: column;
+      flex-wrap: wrap;
+      display: flex;">
+      {% for excerpt in excerpts %}
+      <div class="card border-primary mb-3" id="all{{ excerpt.id }}" data-excerpts="all" data-author="{{ excerpt.author  }}" data-title="{{ excerpt.book  }}"  name="{{ excerpt.genre }}" style="display: fit-content;max-width: 20rem;background-color: transparent;margin: 5px 5px;">
+       
+        <div class="card-body">
+          
+          <p style="padding-bottom: 40px;white-space: pre-wrap;"> &ldquo;  {{ excerpt.excerpt_text  }}  &rdquo;</p>
+            <div class="blockquote-footer" style="padding-bottom: 10px;position: absolute;bottom: 45px;margin-right: 10px;">
+              <a href="#" class="text-secondary" style="font-size: 16px;" onclick="byauthor(this)" >{{ excerpt.author  }}</a>,
+              <em><a href="#" class="text-secondary" onclick="bybook(this)">{{ excerpt.book  }}</a></em>
+              
+        </div>
+        <div> 
+        <small><span id="this{{ excerpt.id }}" style="float: right;color:grey">{{ excerpt.likes.all.count }} likes</span></small>
+        {% if user.is_authenticated and user in excerpt.likes.all %}
+        <button onclick="like('{{ excerpt.id }}')" style="border:none; background: none;float: left;"><img id="{{ excerpt.id  }}" src="{% static 'excerpts/like.png' %}" style="width:25px"></button>
+        
+        {% elif user.is_authenticated and not user in excerpt.likes.all %}
+        <button onclick="like('{{ excerpt.id }}')" style="border:none; background: none;float: left;"><img id="{{ excerpt.id  }}" src="{% static 'excerpts/nolike.png' %}" style="width:25px"></button>
+        {% else %}
+        <a  href="{% url 'login' %}"><img src="{% static 'excerpts/nolike.png' %}" style="width:25px">
+        </a>
+        {% endif %}
+     
+      </div>
+        </div>
+    </div>
+    
+    {% endfor %}
+    
+  </div>
+ 
+  </div>
+    <div class="tab-pane fade" id="Fiction" data-genre="{{ genre }}">
+      <div style="height: 1600px;
+      flex-direction: column;
+      flex-wrap: wrap;
+      display: inline-flex;">
+      {% for fiction in fictions %}
+      <div class="card border-primary mb-3" data-excerpts="all" data-author="{{ fiction.author  }}" data-title="{{ fiction.book  }}" name="{{ fiction.genre }}" style="display: fit-content;max-width: 20rem;background-color: transparent;margin: 5px 5px;">
+       
+        <div class="card-body">
+          
+          <p class="lead" style="padding-bottom: 40px;white-space: pre-wrap;"> &ldquo;  {{ fiction.excerpt_text  }}  &rdquo;</p>
+            <div class="blockquote-footer" style="padding-bottom: 10px;position: absolute;bottom: 45px;margin-right: 10px;">
+              <a href="#" class="text-secondary" style="font-size: 16px;" onclick="byauthor(this)">{{ fiction.author  }}</a>,
+              <em> <a href="#" class="text-secondary" onclick="bybook(this)">{{ fiction.book  }}</a></em>
+              
+        </div>
+        <div> 
+        <small><span id="this{{ fiction.id }}" style="float: right;color:grey">{{ fiction.likes.all.count }} likes</span></small>
+        {% if user.is_authenticated and user in fiction.likes.all %}
+        <button onclick="like('{{ fiction.id }}')" style="border:none; background: none;float: left;"><img id="{{ fiction.id  }}" src="{% static 'excerpts/like.png' %}" style="width:25px"></button>
+        
+        {% elif user.is_authenticated and not user in fiction.likes.all %}
+        <button onclick="like('{{ fiction.id }}')" style="border:none; background: none;float: left;"><img id="{{ fiction.id  }}" src="{% static 'excerpts/nolike.png' %}" style="width:25px"></button>
+        {% endif %}
+     
+      </div>
+        </div>
+    </div>
+    {% endfor %}
+  </div>
+    </div>
+    
+    <div class="tab-pane fade" id="Philosophy" data-genre="{{ genre }}" >
+      <div style="height: 1600px;
+      flex-direction: column;
+      flex-wrap: wrap;
+      display: inline-flex;">
+      {% for philo in philos %}
+      <div class="card border-primary mb-3" data-excerpts="all" data-author="{{ philo.author  }}" data-title="{{ philo.book  }}"  name="{{ philo.genre }}" style="display: fit-content;max-width: 20rem;background-color: transparent;margin: 5px 5px;">
+       
+        <div class="card-body">
+          
+          <p style="padding-bottom: 40px;white-space: pre-wrap;"> &ldquo;  {{ philo.excerpt_text  }}  &rdquo;</p>
+            <div class="blockquote-footer" style="padding-bottom: 10px;position: absolute;bottom: 45px;margin-right: 10px;">
+              <a href="#" class="text-secondary" style="font-size: 16px;" onclick="byauthor(this)">{{ philo.author  }}</a>,
+              <em><a href="#" class="text-secondary" onclick="bybook(this)">{{ philo.book  }}</a></em>
+              
+        </div>
+        <div> 
+        <small><span id="this{{ philo.id }}" style="float: right;color:grey">{{ philo.likes.all.count }} likes</span></small>
+        {% if user.is_authenticated and user in philo.likes.all %}
+        <button onclick="like('{{ philo.id }}')" style="border:none; background: none;float: left;"><img id="{{ philo.id  }}" src="{% static 'excerpts/like.png' %}" style="width:25px"></button>
+        
+        {% elif user.is_authenticated and not user in philo.likes.all %}
+        <button onclick="like('{{ philo.id }}')" style="border:none; background: none;float: left;"><img id="{{ philo.id  }}" src="{% static 'excerpts/nolike.png' %}" style="width:25px"></button>
+        {% endif %}
+     
+      </div>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+  </div>
+    <div class="tab-pane fade show" id="Poetry" data-genre="{{ genre }}">
+      <div style="height: 1600px;
+      flex-direction: column;
+      flex-wrap: wrap;
+      display: inline-flex;">
+      {% for poem in poems %}
+      <div class="card text-white bg-secondary mb-3" data-excerpts="all" data-author="{{ poem.author  }}" data-title="{{ poem.book  }}"  name="{{ poem.genre }}" style="display: fit-content;max-width: 20rem;background-color: transparent;margin: 5px 5px;">
+       
+        <div class="card-body">
+          
+          <p style="padding-bottom: 40px;white-space: pre-wrap;"> &ldquo;  {{ poem.excerpt_text  }}  &rdquo;</p>
+            <div class="blockquote-footer" style="padding-bottom: 10px;position: absolute;bottom: 45px;margin-right: 10px;">
+              <a href="#" class="text-primary" style="font-size: 16px;" onclick="byauthor(this)">{{ poem.author  }},</a>
+              <em><a href="#" class="text-primary" onclick="bybook(this)">{{ poem.book  }}</a></em>
+              
+        </div>
+        <div> 
+        <small><span id="this{{ poem.id }}" style="float: right;color:grey">{{ poem.likes.all.count }} likes</span></small>
+        {% if user.is_authenticated and user in poem.likes.all %}
+        <button onclick="like('{{ poem.id }}')" style="border:none; background: none;float: left;"><img id="{{ poem.id  }}" src="{% static 'excerpts/like.png' %}" style="width:25px"></button>
+        
+        {% elif user.is_authenticated and not user in poem.likes.all %}
+        <button onclick="like('{{ poem.id }}')" style="border:none; background: none;float: left;"><img id="{{ poem.id  }}" src="{% static 'excerpts/nolike.png' %}" style="width:25px"></button>
+        {% endif %}
+     
+      </div>
+        </div>
+    </div>
+    {% endfor %}
+  </div>
+  </div>
+  <div class="tab-pane fade show" id="My excerpts">
+    <div style="height: 1600px;
+      flex-direction: column;
+      flex-wrap: wrap;
+      display: inline-flex;">
+    {% for excerpt in excerpts %}
+    {% if user.is_authenticated and user.id ==  excerpt.user_excerpt.id %}
+    <div class="card border-primary mb-3" id="excerpt{{ excerpt.id }}" data-excerpts="all" data-author="{{ excerpt.author  }}" data-title="{{ excerpt.book  }}"  name="{{ excerpt.genre }}" style="display: fit-content;max-width: 20rem;background-color: transparent;margin: 5px 5px;">
+      
+      <div class="card-body">
+        
+        <button type="button" class="close" title="Delete" style="border:none; background: none;float: right;" onclick="alertDelete('{{ excerpt.id }}')" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        
+        <div class="modal" id="deleteornot{{ excerpt.id }}">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-body">
+               
+                <button type="button" class="close" name="deleteornot{{ excerpt.id }}" onclick="closeForm(this)" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            Are you sure you want to delete this excerpt ?
+          <br><br>
+            <form>
+              {% csrf_token %}
+            <button type="button" onclick="deletethis('{{ excerpt.id }}')" class="btn btn-primary btn-sm" ><b>Yes</b></button>
+          </form>   
+          </div>
+            </div>
+            </div>
+          </div>
+       
+        
+        <p style="padding-bottom: 40px;padding-top: 30px;white-space: pre-wrap;" id="text{{ excerpt.id }}" data-text="{{ excerpt.excerpt_text  }}"> &ldquo;  {{ excerpt.excerpt_text  }}  &rdquo;</p>
+          <div class="blockquote-footer" style="padding-bottom: 10px;position: absolute;bottom: 45px;margin-right: 10px;">
+            <a href="#" class="text-secondary" style="font-size: 16px;" onclick="byauthor(this)" id="author{{ excerpt.id }}" data-thisauthor="{{ excerpt.author  }}" >{{ excerpt.author  }}</a>,
+            <em><a href="#" class="text-secondary" onclick="bybook(this)" id="book{{ excerpt.id }}" data-thisbook="{{ excerpt.book  }}" >{{ excerpt.book  }}</a></em>
+            <div id="genre{{ excerpt.id }}" data-thisgenre="{{ excerpt.genre }}"></div>
+      </div>
+      <div> 
+      <small><span id="this{{ excerpt.id }}" style="float: right;color:grey">{{ excerpt.likes.all.count }} likes</span></small>
+      
+      <button onclick="editExcerpt('{{ excerpt.id }}')" title='Edit' style="border:none; background: none;float: left;"><img  src="{% static 'excerpts/quill.png' %}" style="width:25px"></button>
+      
+      <div class="modal" id="editexcerptform{{ excerpt.id }}">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+             
+              <button type="button" class="close" name="editexcerptform{{ excerpt.id }}" onclick="closeForm(this)" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h5 class="modal-title">Edit excerpt</h5>
+            <form>
+              {% csrf_token %}
+            
+              <textarea  class="form-control" id="edittext{{ excerpt.id }}" name="excerpt" rows="10" cols="100" placeholder="Type the excerpt text here" style="margin: 10px 4px;"></textarea>
+              <input class="form-control" type="text" id="editauthor{{ excerpt.id }}" name="author" placeholder="Author" style="margin: 10px 4px;" required>
+              <input class="form-control" type="text" id="editbook{{ excerpt.id }}" name="book" placeholder="Book Title" style="margin: 10px 4px;" required>
+              
+              <select class="form-control"  name="genre" id="editgenre{{ excerpt.id }}" placeholder="Genre" style="margin: 10px 4px;">
+                <option value="" disabled selected hidden>Genre</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Philosophy">Philosophy</option>
+                <option value="Poetry">Poetry</option>
+                
+              </select>
+              <button type="button" onclick="savedit('{{ excerpt.id }}')" class="btn btn-primary" style="float: right;padding: 10px;">Save</button>
+            </form>
+             
+            </div>
+            </div>
+          
+          </div>
+        </div>
+       </div>
+      </div>
+  </div>
+ 
+  {% endif %}
+  {% endfor %}
+</div>
+</div>
+
+<div class="tab-pane fade show" id="My likes">
+  <div style="width: 1600px;
+      flex-direction: column;
+      flex-wrap: wrap;
+      display: inline-flex;">
+  {% for excerpt in excerpts %}
+  {% if user.is_authenticated and user in excerpt.likes.all %}
+  <div class="card border-primary mb-3" data-excerpts="all" data-author="{{ excerpt.author  }}" data-title="{{ excerpt.book  }}"  name="{{ excerpt.genre }}" style="display: fit-content;max-width: 20rem;background-color: transparent;margin: 5px 5px;">
+       
+    <div class="card-body">
+      
+      <p style="padding-bottom: 40px;white-space: pre-wrap;"> &ldquo;  {{ excerpt.excerpt_text  }}  &rdquo;</p>
+        <div class="blockquote-footer" style="padding-bottom: 10px;position: absolute;bottom: 45px;margin-right: 10px;">
+          <a href="#" class="text-secondary" style="font-size: 16px;" onclick="byauthor(this)" >{{ excerpt.author  }}</a>,
+          <em><a href="#" class="text-secondary" onclick="bybook(this)">{{ excerpt.book  }}</a></em>
+          
+    </div>
+    <div> 
+    <small><span id="this{{ excerpt.id }}" style="float: right;color:grey">{{ excerpt.likes.all.count }} likes</span></small>
+   
+    <button onclick="like('{{ excerpt.id }}')" style="border:none; background: none;float: left;"><img id="mylike{{ excerpt.id  }}" src="{% static 'excerpts/like.png' %}" style="width:25px"></button>
+    
+    
+ 
+  </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+</div>
+  
+</div>
+<div style="display: flex;flex-wrap: wrap;  ">
+<div  style=" position: absolute; 
+left: 600px; padding: 10px; ">
+<ul  class="pagination">
+  {% if noprevious %}
+  <li  class="page-item disabled">
+    <a class="page-link" href="{% url 'oldpages' prepage %}">&laquo;</a>
+  </li>
+  {% else %}
+  <li  class="page-item">
+    <a class="page-link" href="{% url 'oldpages' prepage %}">&laquo;</a>
+  </li>
+  {% endif %}
+  {% for page in pages %}
+  {% if page == currentPage %}
+  <li class="page-item active" id="{{ page }}">
+    <a class="page-link" href="#">{{ page }}</a>
+  </li>
+  {% else %}
+  <li class="page-item" id="{{ page }}">
+    <a  class="page-link" href="{% url 'oldpages' page %}">{{ page }}</a>
+          
+  </li>
+  {% endif %}
+  {% endfor %}
+  {% if nonext %}
+  <li  class="page-item disabled">
+    <a class="page-link " href="{% url 'oldpages' nextpage %}">&raquo;</a>
+  </li>
+  {% else %}
+  <li  class="page-item">
+    <a class="page-link " href="{% url 'oldpages' nextpage %}">&raquo;</a>
+  </li>
+  {% endif %}
+</ul>
+</div>
+</div>
+<script>
+  var ylike = "{% static 'excerpts/like.png' %}";
+  var nolike = "{% static 'excerpts/nolike.png' %}";
+
+  
+
+  document.addEventListener('DOMContentLoaded', function() {
+
+var x = document.getElementsByName("Poetry");
+var i;
+
+for (i = 0; i < x.length; i++) {
+
+x[i].className = "card text-white bg-secondary mb-3";
+x[i].getElementsByTagName("A")[0].className = "text-primary";
+x[i].getElementsByTagName("A")[1].className = "text-primary";
+
+} 
+var y = document.getElementsByName("Fiction");
+var i;
+for (i = 0; i < y.length; i++) {
+y[i].getElementsByTagName("P")[0].className = "lead";
+} 
+
+
+var all = document.getElementsById("All");
+var fiction = document.getElementsById("Fiction");
+var philo = document.getElementsById("Philosophy");
+var poetry = document.getElementsById("Poetry");
+
+if (all.dataset.genre != "All") {
+
+all.className = "tab-pane fade";
+document.getElementById("navAll").className = "nav-link";
+
+if (fiction.dataset.genre == "Fiction") {
+
+fiction.className = "tab-pane fade show active";
+document.getElementById("navFiction").className = "nav-link active";
+
+}
+
+if (philo.dataset.genre == "Philosophy") {
+
+philo.className = "tab-pane fade show active";
+document.getElementById("navPhilo").className = "nav-link active";
+
+}
+
+if (poetry.dataset.genre == "Poetry") {
+
+poetry.className = "tab-pane fade show active";
+document.getElementById("navPoetry").className = "nav-link active";
+
+}
+
+} 
+
+
+
+
+
+
+
+let input = document.getElementById("search");
+   
+input.onkeyup = function() {
+
+let word = input.value;
+var list = document.getElementById("found"); 
+
+if (word == ""){
+
+while (list.firstChild) {
+list.removeChild(list.firstChild);
+}
+}
+
+
+
+fetch(`/search/${word}`)
+.then(response => response.json())
+.then(found => {
+found.forEach(element => {
+
+
+
+let author = `${element.author}`;
+let book = `${element.book}`;
+let lowerword = word.toLowerCase();
+
+
+
+if (author.toLowerCase().includes(lowerword)) {
+
+
+
+
+let opt2 = document.createElement('option');
+opt2.innerHTML = `${element.author}`;
+document.getElementById("found").append(opt2);
+
+let options = []
+
+document.querySelectorAll('#found > option').forEach((option) => {
+if (options.includes(option.value)) option.remove()
+else options.push(option.value)
+})
+
+}
+if (book.toLowerCase().includes(lowerword)) {
+let opt3 = document.createElement('option');
+opt3.innerHTML = `${element.book}`;
+document.getElementById("found").append(opt3);
+
+let options = []
+
+document.querySelectorAll('#found > option').forEach((option) => {
+if (options.includes(option.value)) option.remove()
+else options.push(option.value)
+})
+}
+
+
+});
+
+});
+
+};
+})
+
+
+</script>
+
+{% endblock %}

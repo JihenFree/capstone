@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Excerpts Brought to Light{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="{% static 'excerpts/open-book.png' %}" type="image/x-icon">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="https://bootswatch.com/4/sketchy/bootstrap.min.css" rel="stylesheet">
+        <link href="https://bootswatch.com/4/sketchy/bootstrap.css" rel="stylesheet">
+        <link href="https://bootswatch.com/4/sketchy/_variables.scss" rel="stylesheet">
+        <link href="https://bootswatch.com/4/sketchy/_bootswatch.scss" rel="stylesheet">
+        <link href="{% static 'excerpts/styles.css' %}" rel="stylesheet">
+        <script src="{% static 'excerpts/excerptscript.js' %}"></script>
+    </head>
+    <body>
+      
+    
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" >
+            <a class="navbar-brand" href="{% url 'index' %}" ><h1 style='display: flex;flex-wrap: wrap;'><img src="{% static 'excerpts/open-book.png' %}" alt="book" height="50">&nbsp;&nbsp;Excerpts&nbsp; <span class="text-warning">brought to light</span></h1></a>
+           
+          
+            <div class="collapse navbar-collapse" id="navbarColor01" style='display: flex;flex-wrap: wrap;'>
+              <ul class="nav navbar-nav  ml-auto" >
+                
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="nav-link" href="#"  onclick="newExcerpt();">New excerpt
+                  </a>
+                </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout
+                    </a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'login' %}">Log in
+                  </a>
+                </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Register
+                    </a>
+                </li>
+                {% endif %}
+              </ul>
+             
+            </div>
+          </nav>
+          
+          <div style="margin: 10px 30px;">
+           
+        {% block body %}
+        {% endblock %}
+        
+       
+
+    </body>
+</html>
