@@ -14,7 +14,7 @@ echo "Installing new/better version of poetry into our virtual env..."
 echo "Installing django into our virtual env..."
 pip install Django
 pip install dj-database-url
-
+pip install psycopg2-binary
 echo "Done"
 
 python manage.py collectstatic --no-input
