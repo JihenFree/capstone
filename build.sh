@@ -15,6 +15,7 @@ echo "Installing django into our virtual env..."
 pip install Django
 pip install dj-database-url
 pip install psycopg2-binary
+pip install 'whitenoise[brotli]'
 echo "Done"
 
 python manage.py collectstatic --no-input
