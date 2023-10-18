@@ -16,6 +16,7 @@ pip install Django
 pip install dj-database-url
 pip install psycopg2-binary
 pip install 'whitenoise[brotli]'
+pip install gunicorn
 echo "Done"
 
 python manage.py collectstatic --no-input
