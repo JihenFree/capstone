@@ -23,6 +23,3 @@ echo "Done"
 python manage.py collectstatic --no-input
 python manage.py migrate
 
-echo "run gunicorn"
-gunicorn --pythonpath capstone.wsgi --log-file -
-echo "run gunicorn Done"
