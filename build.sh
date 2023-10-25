@@ -24,5 +24,5 @@ python manage.py collectstatic --no-input
 python manage.py migrate
 
 echo "run gunicorn"
-gunicorn --pythonpath capstone capstone.wsgi --log-file -
+gunicorn --pythonpath capstone.wsgi --log-file -
 echo "run gunicorn Done"
