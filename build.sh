@@ -6,8 +6,8 @@ echo "Creating a virtual env for both poetry and our packages..."
 python -m venv venv
 
 echo "Updating pip ;-)..."
-./venv/bin/python -m pip install --upgrade pip
-pip install --force-reinstall -U setuptools
+/opt/render/project/src/.venv/bin/python3.9 -m pip install --upgrade pip
+
 
 echo "Installing new/better version of poetry into our virtual env..."
 ./venv/bin/pip install poetry==1.6.1
