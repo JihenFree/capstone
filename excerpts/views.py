@@ -197,6 +197,9 @@ def new_excerpt(request):
         if total_excerpts % 10 == 0 and thisuser != last_rewarded:
             Reward.objects.create(user_reward=thisuser,reward_date=now)
         return HttpResponseRedirect(reverse("index")) 
+    else:
+        return HttpResponseRedirect(reverse("index"))
+
 
 @login_required
 def maxday(request):
