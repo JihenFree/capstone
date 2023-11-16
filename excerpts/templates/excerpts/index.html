@@ -79,6 +79,19 @@
     </div>
     </div>
   </div>
+  <div class="modal" id="added">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+         
+          <button type="button" class="close" name="added" onclick="closeForm(this)" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      Your excerpt has been succesfully added. Refresh to see it.
+        </div>
+      </div>
+      </div>
+    </div>
   <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
 <div class="modal" id="newexcerptform" >
   <div class="modal-dialog" role="document">
@@ -103,7 +116,7 @@
           <option value="Poetry">Poetry</option>
           
         </select>
-        <button type="submit" class="btn btn-primary" style="float: right;padding: 10px;">Save</button>
+        <button type="submit" name="newexcerptform" class="btn btn-primary" style="float: right;padding: 10px;" onclick="addedExcerpt(this)">Save</button>
       </div>
       </div>
     </form>

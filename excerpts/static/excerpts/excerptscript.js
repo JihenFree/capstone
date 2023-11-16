@@ -161,6 +161,14 @@ function editExcerpt(thisexcerpt){
     
     
    }
+   function addedExcerpt(item){
+    var thisitem = item.name;
+    document.getElementById(thisitem).style.display = "none";
+    document.getElementById("added").style.display = "block";
+    
+   
+   
+  }
 
    function alertDelete(thisexcerpt){
     
