@@ -79,7 +79,7 @@
     </div>
     </div>
   </div>
-
+  <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
 <div class="modal" id="newexcerptform" >
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -89,10 +89,10 @@
           <span aria-hidden="true">&times;</span>
         </button>
         <h5 class="modal-title">New Excerpt</h5>
-      <form action="{% url 'newexcerpt' %}" method="post">
+      <form action="{% url 'newexcerpt' %}" method="post" target="dummyframe">
         {% csrf_token %}
       
-        <textarea  class="form-control" name="excerpt" rows="10" cols="100" maxlength="200" minlength="20" placeholder="Type the excerpt text here" style="margin: 10px 4px;" required></textarea>
+        <textarea  class="form-control" name="excerpt" rows="10" cols="100" maxlength="300" minlength="20" placeholder="Type the excerpt text here" style="margin: 10px 4px;" required></textarea>
         <input class="form-control" type="text" name="author" placeholder="Author" style="margin: 10px 4px;" required> 
         <input class="form-control" type="text" name="book" placeholder="Book Title" style="margin: 10px 4px;" required>
         
