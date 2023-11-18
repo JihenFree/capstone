@@ -102,7 +102,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
         <h5 class="modal-title">New Excerpt</h5>
-      <form action="{% url 'newexcerpt' %}" method="post" target="dummyframe">
+      <form action="{% url 'newexcerpt' %}" method="post">
         {% csrf_token %}
       
         <textarea  class="form-control" name="excerpt" rows="10" cols="100" maxlength="300" minlength="20" placeholder="Type the excerpt text here" style="margin: 10px 4px;" required></textarea>
@@ -116,7 +116,7 @@
           <option value="Poetry">Poetry</option>
           
         </select>
-        <button type="submit" name="newexcerptform" class="btn btn-primary" style="float: right;padding: 10px;" onclick="addedExcerpt(this)">Save</button>
+        <button type="submit" name="newexcerptform" class="btn btn-primary" style="float: right;padding: 10px;">Save</button>
       </div>
       </div>
     </form>
