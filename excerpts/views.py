@@ -194,7 +194,8 @@ def new_excerpt(request):
         Excerpt.objects.create(user_excerpt=thisuser,excerpt_text=thisexcerpt,author=author,genre=genre,book=book,excerpt_date=now)
         total_excerpts = Excerpt.objects.all().count()
         #last_rewarded = Reward.objects.order_by('-id')[0].user_reward
-        if total_excerpts % 10 == 0 #and thisuser != last_rewarded:
+        if total_excerpts % 10 == 0:
+        #and thisuser != last_rewarded
             Reward.objects.create(user_reward=thisuser,reward_date=now)
     return HttpResponseRedirect(reverse("index")) 
    
